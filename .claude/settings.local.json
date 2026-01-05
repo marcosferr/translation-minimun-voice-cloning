@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ffmpeg:*)",
+      "Bash(pip install:*)",
+      "Bash(python3:*)",
+      "Bash(uv:*)",
+      "Bash(pip3:*)",
+      "Bash(sudo apt:*)",
+      "Bash(sudo apt install:*)",
+      "Bash(curl:*)",
+      "Bash(source:*)",
+      "Bash(pip:*)",
+      "Bash(apt install:*)",
+      "WebSearch",
+      "Bash(git clone:*)"
+    ]
+  }
+}
