@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import List
 
 import numpy as np
+import torch
 try:
     import soundfile as sf
 except ImportError:
@@ -76,7 +77,7 @@ class TranslationPipeline:
         target_lang: str = "en",
         device: str = "cuda",
         openai_api_key: str = None,
-        voice_prompt_duration: float = 5.0,
+        voice_prompt_duration: float = 20.0,
     ):
         self.video_input = Path(video_input)
         self.voice_prompt = Path(voice_prompt) if voice_prompt else None
@@ -359,10 +360,21 @@ Return ALL segments with their translations, preserving the exact start and end 
 
             # audio is a tensor, not a dict
             audio_chunks.append(audio)
-            print(f"Generated {len(audio)} samples")
+            print(f"Generated {audio.shape[-1]} samples")
 
         # Concatenate all audio chunks
-        final_audio = sum(audio_chunks)
+        if not audio_chunks:
+            print("Warning: No audio generated")
+            return np.array([])
+
+        if isinstance(audio_chunks[0], torch.Tensor):
+            # Concatenate along the time dimension (last dimension)
+            final_audio_tensor = torch.cat(audio_chunks, dim=-1)
+            # Move to CPU and convert to numpy, flatten to 1D array
+            final_audio = final_audio_tensor.cpu().float().numpy().flatten()
+        else:
+            final_audio = np.concatenate(audio_chunks)
+
         sf.write(str(self.tts_output), final_audio, 24000)
 
         print(f"      TTS audio saved to {self.tts_output}")

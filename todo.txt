@@ -1,0 +1,11 @@
+
+
+Increase to 20 seconds combined because that is what documentation states
+[3/6] Selecting best voice segments with gpt-5-mini...
+      Selected segments: [0, 1]
+      Reason: Segments 0 (3.2s) and 1 (2.3s) give a combined ~5.5s of clear, natural speech with complete/usable phrases. Segment 0 is a clean, representative full-sentence intro (“So now let's talk about Amazon GuardDuty…”), and Segment 1 provides a distinct prosodic pattern (“Number one, you can have a multi-account strategy…”) useful for capturing the speaker’s cadence and emphasis. Other segments are more truncated/repetitive or shorter and less complete, so they are less useful for cloning.
+[4/6] Extracting and merging 2 voice segments...
+      Segment 0: 3.16s - " So now let's talk about Amazon GuardDut..."
+      Segment 1: 2.32s - " Number one, you can have a multi-accoun..."
+      Voice prompt created: 5.78s duration
+[5/6] Translating 177 segments with gpt-5-mini (batch)...

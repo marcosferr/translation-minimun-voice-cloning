@@ -154,6 +154,55 @@ python translate.py input.mp4 voice.wav output.mp4 --source-lang es --target-lan
 
 # 3. Result
 # - output.mp4: Translated video with cloned voice
+
+---
+
+## Reproducible setup used for testing ✅
+
+- **OS**: Windows (tested here on Windows with a user-installed FFmpeg)
+- **Conda environment**: `tts-env` with **Python 3.11.14`
+
+  Example commands used to reproduce the environment:
+  ```bash
+  conda create -n tts-env python=3.11 -y
+  conda activate tts-env
+
+  # Install system/binary deps with conda for Windows
+  conda install -c conda-forge ffmpeg "numpy>=1.24.0,<1.26.0" pysoundfile -y
+
+  # Install Python packages from requirements and extras
+  pip install -r requirements.txt
+  pip install chatterbox-tts python-dotenv openai
+
+  # Install CUDA-enabled PyTorch (for RTX 40-series tested here with CUDA 12.4)
+  pip install --index-url https://download.pytorch.org/whl/cu124 torch torchvision torchaudio --force-reinstall
+  ```
+
+- **GPU used in testing**: NVIDIA RTX 4060 (6 GB VRAM) — PyTorch built with CUDA 12.4 was installed and verified with `torch.cuda.is_available()`.
+- **FFmpeg**: script checks PATH first and falls back to a hardcoded Windows install path in the test machine. Example hardcoded path used in the script:
+
+  `C:\Users\ferre\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.0.1-full_build\bin\ffmpeg.exe`
+
+- **Notes on dependency tweaks**: During setup I installed a CUDA-enabled torch wheel and then pinned back `numpy<1.26.0` and `pillow<12.0` to satisfy `chatterbox-tts` / `gradio` constraints.
+
+- **Command used to run the example in this repo (what I ran):**
+  ```bash
+  conda activate tts-env && python translate.py input.mp4 output.mp4 --source-lang en --target-lang es
+  ```
+
+- **Files used in this test**:
+  - `input.mp4` (source video included in repo)
+  - `output.mp4` (generated result)
+
+---
+
+## Credits / Video Reference
+
+Guide credit to: [Stephane Maarek — Amazon GuardDuty Deep Dive](https://youtu.be/M4aOKikd7-s?si=3uEMYeqntCBEc_9D)
+
+---
+
+## How It Works
 ```
 
 ## How It Works
