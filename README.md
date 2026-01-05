@@ -1,294 +1,206 @@
+
 # Translation Pipeline with Voice Cloning
 
-This repository provides a minimal, fully automated pipeline for translating videos while preserving the original speaker’s voice, using modern speech-to-text, translation, and TTS models.
+> Fully automated video translation with voice cloning.  
+> Inspired by how Meta translates Reels at scale.  
+> **Only 5 seconds of voice required.**
 
-The project is inspired by how platforms like Meta translate Reels at scale, and aims to make high-quality English technical content accessible to Spanish-speaking audiences (and other languages) with minimal setup.
+This repository provides a **minimal, end-to-end pipeline** for translating videos while **preserving the original speaker’s voice**, using modern speech-to-text, translation, and TTS models.
 
-Only 3–10 seconds of clean voice audio are required to clone the speaker’s voice.
-Once configured, the entire pipeline runs end-to-end without manual intervention.
+The main goal is to make **high-quality English technical content accessible to Spanish-speaking audiences** (and other languages) with **minimal setup and zero manual steps**.
+
+---
+
+## ✨ Why this project?
+
+Most valuable technical content is published in English.  
+Language should not be the limiting factor for learning.
+
+This project demonstrates how modern AI tooling can reduce that barrier **without sacrificing speaker identity**, using an approach similar to large-scale localization systems used by platforms like **Meta**.
+
+---
+
+## 🔑 Key Features
+
+- ✅ Fully automated pipeline (no manual editing)
+- 🎙 Voice cloning with **only 3–10 seconds of clean audio**
+- 🧩 Segment-by-segment translation optimized for lip-sync
+- ⚙️ Simple, reproducible setup
+- 🧪 Designed to be extended or integrated into larger workflows
+
+---
+
+## 🧠 Pipeline Overview
 
 
-## Pipeline Overview
 
-```
-FFmpeg -> Whisper API -> GPT-5 mini -> Chatterbox TTS -> FFmpeg
-```
+FFmpeg → Whisper API → GPT-5 mini → Chatterbox TTS → FFmpeg
 
-1. **FFmpeg**: Extract audio from video
-2. **Whisper API**: Transcribe with timestamps
-3. **GPT-5 mini**: Translate segment by segment
-4. **Chatterbox TTS**: Generate cloned voice
-5. **FFmpeg**: Merge audio with video
+````
 
-## Prerequisites
+| Step | Description |
+|-----|------------|
+| FFmpeg | Extracts and merges audio/video |
+| Whisper API | Transcribes audio with timestamps |
+| GPT-5 mini | Translates segments individually |
+| Chatterbox TTS | Generates cloned voice |
+| FFmpeg | Assembles final translated video |
 
-### System Requirements
+---
 
-- **FFmpeg** installed and in PATH
-  - Download: https://ffmpeg.org/download.html
-  - Verify: `ffmpeg -version`
+## 🚀 Quick Start
 
-### Hardware
+### Requirements
 
-- **GPU**: CUDA-capable GPU recommended (optional, CPU works but slower)
-- **RAM**: 8GB+ recommended
+- **Python 3.10+**
+- **FFmpeg** (installed and in PATH)
+- Optional: CUDA-capable GPU (CPU works, slower)
 
-### Software
+Verify FFmpeg:
+```bash
+ffmpeg -version
+````
 
-- Python 3.10+
+---
 
-## Installation
-
-### 1. Clone or download this project
+### Installation
 
 ```bash
+git clone https://github.com/marcosferr/translation-minimun-voice-cloning.git
 cd translation-minimun-voice-cloning
-```
 
-### 2. Create virtual environment (recommended)
-
-```bash
 python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
 
-# On Linux/Mac:
-source venv/bin/activate
-
-# On Windows:
-venv\Scripts\activate
-```
-
-### 3. Install Python dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
-### 4. Set up OpenAI API key
+---
 
-Copy `.env.example` to `.env`:
+### OpenAI API Key
+
+Create a `.env` file:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and add your API key:
+Add your key:
 
-```
+```env
 OPENAI_API_KEY=sk-your-actual-api-key-here
 ```
 
-Get your API key from: https://platform.openai.com/api-keys
-
-## Usage
-
-### Basic Usage
-
-```bash
-python translate.py input.mp4 voice_prompt.wav output.mp4
-```
-
-### With Custom Languages
-
-```bash
-python translate.py input.mp4 voice_prompt.wav output.mp4 \
-    --source-lang es \
-    --target-lang en
-```
-
-### Force CPU (if no GPU)
-
-```bash
-python translate.py input.mp4 voice_prompt.wav output.mp4 --device cpu
-```
-
-### All Options
-
-```
-positional arguments:
-  video_input          Input video file (e.g., input.mp4)
-  voice_prompt         Voice reference audio (e.g., voice.wav)
-  video_output         Output video file (e.g., output.mp4)
-
-options:
-  --source-lang        Source language code (default: es)
-  --target-lang        Target language code (default: en)
-  --device             Device for Chatterbox TTS: cuda or cpu (default: cuda)
-  --api-key            OpenAI API key (or use OPENAI_API_KEY env var)
-```
-
-## Input Files
-
-### Video Input
-
-- Format: MP4, AVI, MOV, etc. (FFmpeg compatible)
-- Audio: Will be extracted automatically
-
-### Voice Prompt
-
-- Format: WAV recommended
-- Duration: 3-10 seconds
-- Quality: Clean, clear voice sample
-- Content: The target voice you want to clone
-
-## Language Codes
-
-Common language codes:
-
-| Language | Code |
-|----------|------|
-| Spanish  | `es` |
-| English  | `en` |
-| French   | `fr` |
-| German   | `de` |
-| Italian  | `it` |
-| Portuguese | `pt` |
-| Japanese | `ja` |
-| Korean   | `ko` |
-| Chinese  | `zh` |
-
-Full list: https://platform.openai.com/docs/guides/speech-to-text/supported-languages
-
-## Example Workflow
-
-```bash
-# 1. Prepare your files
-# - input.mp4: Source video
-# - voice.wav: Clean voice sample (3-10 seconds)
-
-# 2. Run translation (Spanish to English)
-python translate.py input.mp4 voice.wav output.mp4 --source-lang es --target-lang en
-
-# 3. Result
-# - output.mp4: Translated video with cloned voice
-
 ---
 
-## Reproducible setup used for testing ✅
+## ▶️ Usage
 
-- **OS**: Windows (tested here on Windows with a user-installed FFmpeg)
-- **Conda environment**: `tts-env` with **Python 3.11.14`
+### Basic example
 
-  Example commands used to reproduce the environment:
-  ```bash
-  conda create -n tts-env python=3.11 -y
-  conda activate tts-env
-
-  # Install system/binary deps with conda for Windows
-  conda install -c conda-forge ffmpeg "numpy>=1.24.0,<1.26.0" pysoundfile -y
-
-  # Install Python packages from requirements and extras
-  pip install -r requirements.txt
-  pip install chatterbox-tts python-dotenv openai
-
-  # Install CUDA-enabled PyTorch (for RTX 40-series tested here with CUDA 12.4)
-  pip install --index-url https://download.pytorch.org/whl/cu124 torch torchvision torchaudio --force-reinstall
-  ```
-
-- **GPU used in testing**: NVIDIA RTX 4060 (6 GB VRAM) — PyTorch built with CUDA 12.4 was installed and verified with `torch.cuda.is_available()`.
-- **FFmpeg**: script checks PATH first and falls back to a hardcoded Windows install path in the test machine. Example hardcoded path used in the script:
-
-  `C:\Users\ferre\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.0.1-full_build\bin\ffmpeg.exe`
-
-- **Notes on dependency tweaks**: During setup I installed a CUDA-enabled torch wheel and then pinned back `numpy<1.26.0` and `pillow<12.0` to satisfy `chatterbox-tts` / `gradio` constraints.
-
-- **Command used to run the example in this repo (what I ran):**
-  ```bash
-  conda activate tts-env && python translate.py input.mp4 output.mp4 --source-lang en --target-lang es
-  ```
-
-- **Files used in this test**:
-  - `input.mp4` (source video included in repo)
-  - `output.mp4` (generated result)
-
----
-
-## Credits / Video Reference
-
-Guide credit to: [Stephane Maarek — Amazon GuardDuty Deep Dive](https://youtu.be/M4aOKikd7-s?si=3uEMYeqntCBEc_9D)
-
----
-
-## How It Works
+```bash
+python translate.py input.mp4 voice.wav output.mp4
 ```
 
-## How It Works
+### Custom languages
 
-### Step 1: Audio Extraction
-FFmpeg extracts mono audio at 16kHz from the input video.
+```bash
+python translate.py input.mp4 voice.wav output.mp4 \
+  --source-lang en \
+  --target-lang es
+```
 
-### Step 2: Transcription
-Whisper API transcribes the audio with precise timestamps.
+### Force CPU
 
-### Step 3: Translation
-Each segment is translated individually with GPT-5 mini, optimizing for lip-sync.
-
-### Step 4: Voice Generation
-Chatterbox TTS generates speech matching the voice prompt using voice cloning.
-
-### Step 5: Video Assembly
-FFmpeg merges the new audio with the original video.
-
-## Troubleshooting
-
-### FFmpeg not found
-
-**Error**: `ffmpeg: command not found`
-
-**Solution**: Install FFmpeg and add to PATH
-- Windows: https://ffmpeg.org/download.html#build-windows
-- Mac: `brew install ffmpeg`
-- Linux: `sudo apt install ffmpeg`
-
-### CUDA errors
-
-**Error**: `CUDA out of memory` or `CUDA not available`
-
-**Solution**: Use CPU instead:
 ```bash
 python translate.py input.mp4 voice.wav output.mp4 --device cpu
 ```
 
-### OpenAI API errors
+---
 
-**Error**: `OPENAI_API_KEY not found`
+## 📥 Input Requirements
 
-**Solution**: Create `.env` file with your API key or pass with `--api-key`
+### Video
 
-### Voice cloning sounds bad
+* Format: MP4, AVI, MOV (FFmpeg compatible)
+* Audio extracted automatically
 
-**Solution**: Improve your voice prompt:
-- Use high-quality, clean audio
-- 3-10 seconds duration
-- Single speaker, no background noise
-- Consistent speaking style
+### Voice Prompt
 
-## Current Limitations
+* Format: WAV (recommended)
+* Duration: **3–10 seconds**
+* Clean audio, single speaker, no background noise
 
-This minimal implementation does NOT handle:
+---
 
-- Time-stretching to match original segment duration
-- Silence preservation between segments
-- Error retry logic
-- Manual editing capabilities
-- Queue/batch processing
+## 🌍 Supported Languages
 
-## Next Steps
+| Language   | Code |
+| ---------- | ---- |
+| Spanish    | es   |
+| English    | en   |
+| French     | fr   |
+| German     | de   |
+| Italian    | it   |
+| Portuguese | pt   |
+| Japanese   | ja   |
+| Korean     | ko   |
+| Chinese    | zh   |
 
-Potential improvements:
+Full list:
+[https://platform.openai.com/docs/guides/speech-to-text/supported-languages](https://platform.openai.com/docs/guides/speech-to-text/supported-languages)
 
-1. **Time-stretching**: Adjust audio duration to match original timestamps
-2. **Silence handling**: Preserve natural pauses between segments
-3. **CLI enhancements**: Progress bars, verbose mode
-4. **Modular design**: Separate modules for each pipeline stage
-5. **Wav2Lip integration**: Lip-sync enhancement
+---
 
-## Documentation Links
+## 🧪 Reproducible Test Setup
 
-- [FFmpeg Documentation](https://ffmpeg.org/documentation.html)
-- [Whisper API Guide](https://platform.openai.com/docs/guides/speech-to-text)
-- [GPT Responses API](https://platform.openai.com/docs/guides/responses)
-- [Chatterbox GitHub](https://github.com/resemble-ai/chatterbox)
+* OS: Windows
+* Python: 3.11
+* GPU tested: NVIDIA RTX 4060 (CUDA 12.4)
 
-## License
+Example:
 
-MIT License - Feel free to modify and use as needed.
+```bash
+conda create -n tts-env python=3.11 -y
+conda activate tts-env
+conda install -c conda-forge ffmpeg numpy<1.26 pysoundfile -y
+pip install -r requirements.txt
+pip install chatterbox-tts python-dotenv openai
+```
+
+---
+
+## ⚠️ Current Limitations
+
+This minimal implementation does **not** handle:
+
+* Time-stretching to match original segment duration
+* Silence preservation
+* Retry logic
+* Batch/queue processing
+* Manual post-editing
+
+---
+
+## 🛣 Roadmap / Next Steps
+
+* ⏱ Time-stretching for better sync
+* 🔇 Silence preservation
+* 🧱 Modular pipeline stages
+* 🧪 CLI improvements (progress, verbose mode)
+* 👄 Wav2Lip integration for lip-sync
+
+---
+
+## 🙌 Credits
+
+Video reference used for testing:
+**Stephane Maarek — Amazon GuardDuty Deep Dive**
+
+---
+
+## 📄 License
+
+MIT License — free to use, modify, and extend.
+
+
