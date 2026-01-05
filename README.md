@@ -1,6 +1,12 @@
 # Translation Pipeline with Voice Cloning
 
-Minimal translation pipeline using Whisper API, GPT-5 mini, and Chatterbox TTS for voice cloning.
+This repository provides a minimal, fully automated pipeline for translating videos while preserving the original speaker’s voice, using modern speech-to-text, translation, and TTS models.
+
+The project is inspired by how platforms like Meta translate Reels at scale, and aims to make high-quality English technical content accessible to Spanish-speaking audiences (and other languages) with minimal setup.
+
+Only 3–10 seconds of clean voice audio are required to clone the speaker’s voice.
+Once configured, the entire pipeline runs end-to-end without manual intervention.
+
 
 ## Pipeline Overview
 
